@@ -1,5 +1,5 @@
 # Trackify - ApniSec Security Issue Management
-
+This Project is part of assignment for ApniSec
 A full-stack Next.js 15+ application with custom JWT authentication, rate limiting, email integration, and SEO optimization. Built with a strict OOP backend architecture.
 
 ## Tech Stack
