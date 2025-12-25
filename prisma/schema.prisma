@@ -1,14 +1,97 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Prisma schema for Trackify - ApniSec Issue Management
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../app/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+// ========================
+// Enums
+// ========================
+
+enum IssueType {
+  CLOUD_SECURITY
+  RETEAM_ASSESSMENT
+  VAPT
+}
+
+enum IssueStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum IssuePriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+// ========================
+// Models
+// ========================
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         UserRole @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  issues Issue[]
+
+  @@map("users")
+}
+
+model Issue {
+  id          String        @id @default(cuid())
+  type        IssueType
+  title       String
+  description String
+  status      IssueStatus   @default(OPEN)
+  priority    IssuePriority @default(MEDIUM)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@map("issues")
+}
+
+model RateLimitEntry {
+  id        String   @id @default(cuid())
+  key       String   @unique // IP or userId
+  count     Int      @default(0)
+  windowStart DateTime @default(now())
+
+  @@map("rate_limit_entries")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
 }
