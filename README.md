@@ -116,6 +116,4 @@ The backend follows strict OOP principles:
 - **Repositories**: Database operations (CRUD)
 - **Validators**: Input validation using Zod schemas
 
-## License
 
-MIT
